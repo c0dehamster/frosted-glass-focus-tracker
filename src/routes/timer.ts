@@ -1,12 +1,14 @@
 import type { Task } from "$lib/types/Task"
 import { derived, writable } from "svelte/store"
 import { database } from "./database"
+import type { durationInSeconds } from "$lib/types/duration"
+import { WorkSession } from "$lib/types/WorkSession"
 
 type TimerStatus = "idle" | "active" | "elapsed" | "failed" | "break"
 
 interface Timer {
-    timestamp: number
-    duration: number
+    timerStart: Date
+    duration: durationInSeconds
     timeElapsed: number
     status: TimerStatus
     task: {
@@ -18,7 +20,7 @@ interface Timer {
 // TODO: move the defaults to a more appropriate location
 
 const defaultTimer: Timer = {
-    timestamp: 0,
+    timerStart: new Date(Date.now()),
     duration: 1800,
     timeElapsed: 0,
     status: "idle",
@@ -34,7 +36,7 @@ const createTimerStore = (timer: Timer) => {
         let newTask = task ? { name: task.name, id: task.id } : null
 
         set({
-            timestamp: Date.now(),
+            timerStart: new Date(Date.now()),
             duration,
             timeElapsed: 0,
             status: "active",
@@ -70,10 +72,13 @@ const createTimerStore = (timer: Timer) => {
                     status = "elapsed"
 
                     if (store.task) {
-                        database.addWorkSession(store.task.id, {
-                            start: store.timestamp,
-                            duration: store.duration,
-                        })
+                        database.addWorkSession(
+                            store.task.id,
+                            new WorkSession(
+                                store.timerStart,
+                                new Date(Date.now())
+                            )
+                        )
                     }
                 }
 
@@ -88,7 +93,7 @@ const createTimerStore = (timer: Timer) => {
 
     const takeABreak = (duration: number) => {
         set({
-            timestamp: Date.now(),
+            timerStart: new Date(Date.now()),
             duration,
             timeElapsed: 0,
             status: "break",
@@ -138,10 +143,10 @@ const createTimerStore = (timer: Timer) => {
     const giveUp = () => {
         update((store) => {
             if (store.task) {
-                database.addWorkSession(store.task.id, {
-                    start: store.timestamp,
-                    duration: store.timeElapsed,
-                })
+                database.addWorkSession(
+                    store.task.id,
+                    new WorkSession(store.timerStart, new Date(Date.now()))
+                )
             }
 
             return {

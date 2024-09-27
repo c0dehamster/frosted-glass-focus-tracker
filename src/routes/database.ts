@@ -1,4 +1,5 @@
-import type { Task, WorkSession, taskStatus } from "$lib/types/task"
+import { Task, type taskStatus } from "$lib/types/Task"
+import type { WorkSession } from "$lib/types/WorkSession"
 import Dexie, { liveQuery, type Table } from "dexie"
 
 export class DexieCustomDatabase extends Dexie {
@@ -7,26 +8,21 @@ export class DexieCustomDatabase extends Dexie {
     constructor() {
         super("TasksDatabase")
 
-        this.version(1).stores({
-            tasks: "&id, name, description, status, workSessions",
+        this.version(2).stores({
+            tasks: "&id, name, description, deadline, status, workSessions",
         })
     }
 
     /* CREATE */
 
-    async addTask(name: string, description: string | null) {
+    async addTask(
+        name: string,
+        description: string | null,
+        deadline: Date | null
+    ) {
         try {
             let id = crypto.randomUUID()
-            this.tasks.put(
-                {
-                    id,
-                    name,
-                    description,
-                    status: "active",
-                    workSessions: [],
-                },
-                id
-            )
+            this.tasks.put(new Task(id, name, description, deadline), id)
 
             console.log(`Added task "${name}" at ${id}`)
         } catch (error) {

@@ -12,12 +12,15 @@
 
     let errorMessage = ""
 
+    // TODO: add deadline input
+
     const { form, data, setFields } = createForm({
         onSubmit: (values, { reset }) => {
             if (!taskToEdit) {
                 database.addTask(
                     values.name,
-                    values.description !== "" ? values.description : null
+                    values.description !== "" ? values.description : null,
+                    null
                 )
             } else {
                 database.editTask(taskToEdit.id, {
