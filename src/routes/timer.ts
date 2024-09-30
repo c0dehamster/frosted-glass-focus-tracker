@@ -2,7 +2,7 @@ import type { Task } from "$lib/types/Task"
 import { derived, writable } from "svelte/store"
 import { database } from "./database"
 import type { durationInSeconds } from "$lib/types/duration"
-import { WorkSession } from "$lib/types/WorkSession"
+import { addSeconds } from "date-fns"
 
 type TimerStatus = "idle" | "active" | "elapsed" | "failed" | "break"
 
@@ -72,13 +72,13 @@ const createTimerStore = (timer: Timer) => {
                     status = "elapsed"
 
                     if (store.task) {
-                        database.addWorkSession(
-                            store.task.id,
-                            new WorkSession(
+                        database.addWorkSession(store.task.id, {
+                            start: store.timerStart,
+                            end: addSeconds(
                                 store.timerStart,
-                                new Date(Date.now())
-                            )
-                        )
+                                store.timeElapsed
+                            ),
+                        })
                     }
                 }
 
@@ -143,10 +143,10 @@ const createTimerStore = (timer: Timer) => {
     const giveUp = () => {
         update((store) => {
             if (store.task) {
-                database.addWorkSession(
-                    store.task.id,
-                    new WorkSession(store.timerStart, new Date(Date.now()))
-                )
+                database.addWorkSession(store.task.id, {
+                    start: store.timerStart,
+                    end: addSeconds(store.timerStart, store.timeElapsed),
+                })
             }
 
             return {

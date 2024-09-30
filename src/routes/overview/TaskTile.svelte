@@ -3,12 +3,22 @@
 
     import iconCheck from "$lib/images/icon_done.svg"
     import iconExpand from "$lib/images/icon_expand.svg"
+    import { timeIntervalToReportStore } from "./timespan"
+    import { focusedTimeByInterval } from "../../lib/utils/focusedTimeByItherval"
+    import { secondsToHoursAndMinutes } from "$lib/utils/secondsToHoursAndMinutes"
 
     export let task: Task
 
     let expanded = false
 
     const toggleExpanded = () => (expanded = !expanded)
+
+    let timeSpentOnTask = focusedTimeByInterval(
+        task,
+        $timeIntervalToReportStore
+    )
+
+    let timeFormatted = secondsToHoursAndMinutes(timeSpentOnTask)
 
     $: detailsClass = expanded ? "details details--expanded" : "details"
 </script>
@@ -25,7 +35,22 @@
             <div class="details__contents">
                 <div class="time-spent">
                     <p class="time-spent__label">Time spent:</p>
-                    <p class="time-spent__value">8 hrs 48 min</p>
+                    <p class="time-spent__value">
+                        {#if timeFormatted.hours > 0 || timeFormatted.minutes > 0}
+                            {#if timeFormatted.hours > 0}
+                                <span class="time-spent__hours"
+                                    >{timeFormatted.hours} hrs</span
+                                >
+                            {/if}
+                            {#if timeFormatted.minutes > 0}
+                                <span class="time-spent__minutes"
+                                    >{timeFormatted.minutes} min</span
+                                >
+                            {/if}
+                        {:else}
+                            0 min
+                        {/if}
+                    </p>
                 </div>
 
                 <div class="status">

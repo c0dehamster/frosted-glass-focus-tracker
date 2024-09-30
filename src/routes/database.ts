@@ -1,4 +1,4 @@
-import { Task, type taskStatus } from "$lib/types/Task"
+import { type Task, type taskStatus } from "$lib/types/Task"
 import type { WorkSession } from "$lib/types/WorkSession"
 import Dexie, { liveQuery, type Table } from "dexie"
 
@@ -22,7 +22,17 @@ export class DexieCustomDatabase extends Dexie {
     ) {
         try {
             let id = crypto.randomUUID()
-            this.tasks.put(new Task(id, name, description, deadline), id)
+            this.tasks.put(
+                {
+                    id,
+                    name,
+                    description,
+                    deadline,
+                    workSessions: [],
+                    status: "active",
+                },
+                id
+            )
 
             console.log(`Added task "${name}" at ${id}`)
         } catch (error) {

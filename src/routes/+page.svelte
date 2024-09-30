@@ -14,7 +14,9 @@
     import { onMount } from "svelte"
     import { database } from "./database"
 
-    let duration = 30 // For testing, 30 seconds
+    // Timer set to 30 seconds for testing
+
+    let duration = 30
     let breakDuration = 5
 
     // Task picker-related variables
