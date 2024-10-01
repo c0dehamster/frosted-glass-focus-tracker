@@ -1,6 +1,6 @@
 import { interval, isWithinInterval } from "date-fns"
 import type { WorkSession } from "./WorkSession"
-import type { durationInSeconds } from "./duration"
+import type { DurationInSeconds } from "./duration"
 import type { TimeInterval } from "./TimeInterval"
 
 export type taskStatus = "active" | "suspended" | "completed"

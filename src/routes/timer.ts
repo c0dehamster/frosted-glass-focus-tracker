@@ -1,14 +1,14 @@
 import type { Task } from "$lib/types/Task"
 import { derived, writable } from "svelte/store"
 import { database } from "./database"
-import type { durationInSeconds } from "$lib/types/duration"
+import type { DurationInSeconds } from "$lib/types/duration"
 import { addSeconds } from "date-fns"
 
 type TimerStatus = "idle" | "active" | "elapsed" | "failed" | "break"
 
 interface Timer {
     timerStart: Date
-    duration: durationInSeconds
+    duration: DurationInSeconds
     timeElapsed: number
     status: TimerStatus
     task: {

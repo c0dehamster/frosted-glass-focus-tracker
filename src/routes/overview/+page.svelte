@@ -1,13 +1,34 @@
 <script lang="ts">
     import iconExpand from "$lib/images/icon_expand.svg"
+    import type { DurationInSeconds } from "$lib/types/duration"
+    import { secondsToHoursAndMinutes } from "$lib/utils/secondsToHoursAndMinutes"
+    import { onMount } from "svelte"
 
     import { database } from "../database"
 
     import Chart from "./Chart.svelte"
     import Details from "./Details.svelte"
+    import { timeIntervalToReportStore } from "./timespan"
     import TimespanOptions from "./TimespanOptions.svelte"
+    import { totalTimeFocused } from "./totalTimeFocused"
 
     let tasksToDisplay = database.tasksToDisplay
+    let focusedTime: DurationInSeconds = 0
+    let focusedTimeFormatted: {
+        hours: number
+        minutes: number
+    }
+
+    $: {
+        if ($tasksToDisplay) {
+            focusedTime = totalTimeFocused(
+                $tasksToDisplay,
+                $timeIntervalToReportStore
+            )
+
+            focusedTimeFormatted = secondsToHoursAndMinutes(focusedTime)
+        }
+    }
 </script>
 
 <div class="page">
@@ -18,7 +39,22 @@
         </div>
 
         <h1 class="focused-time">
-            Focused time: <span class="focused-time__value">7 hrs 30 min</span>
+            {#if focusedTime > 0}
+                Focused time: <span class="focused-time__value">
+                    {#if focusedTimeFormatted.hours > 0}
+                        <span class="focused-time__hours">
+                            {focusedTimeFormatted.hours} hrs
+                        </span>
+                    {/if}
+                    {#if focusedTimeFormatted.minutes > 0}
+                        <span class="focused-time__minutes">
+                            {focusedTimeFormatted.minutes} min
+                        </span>
+                    {/if}
+                </span>
+            {:else}
+                Nothing to display yet
+            {/if}
         </h1>
 
         <div class="chart">

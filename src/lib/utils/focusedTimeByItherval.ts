@@ -1,4 +1,4 @@
-import type { durationInSeconds } from "$lib/types/duration"
+import type { DurationInSeconds } from "$lib/types/duration"
 import type { Task } from "$lib/types/Task"
 import type { TimeInterval } from "$lib/types/TimeInterval"
 import { differenceInSeconds, interval, isWithinInterval } from "date-fns"
@@ -6,12 +6,12 @@ import { differenceInSeconds, interval, isWithinInterval } from "date-fns"
 export const focusedTimeByInterval = (
     task: Task,
     timespan: TimeInterval
-): durationInSeconds => {
+): DurationInSeconds => {
     let workSessionsWithinInterval = task.workSessions.filter((item) =>
         isWithinInterval(item.start, interval(timespan.start, timespan.end))
     )
 
-    return workSessionsWithinInterval.reduce<durationInSeconds>(
+    return workSessionsWithinInterval.reduce<DurationInSeconds>(
         (accumulator, currentValue) => {
             return (
                 accumulator +

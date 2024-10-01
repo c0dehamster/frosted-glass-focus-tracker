@@ -1,8 +1,8 @@
-import type { durationInSeconds } from "$lib/types/duration"
+import type { DurationInSeconds } from "$lib/types/duration"
 
 // TODO: rewrite this to use date-fns
 
-export const secondsToHoursAndMinutes = (duration: durationInSeconds) => {
+export const secondsToHoursAndMinutes = (duration: DurationInSeconds) => {
     let hours = Math.floor(duration / 3600)
     let hoursRemainder = duration % 3600
     let minutes = Math.round(hoursRemainder / 60)

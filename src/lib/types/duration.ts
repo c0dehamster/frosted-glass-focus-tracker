@@ -1,1 +1,1 @@
-export type durationInSeconds = number
+export type DurationInSeconds = number
